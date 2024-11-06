@@ -4,6 +4,15 @@
 echo "현재 작업 디렉토리: $(pwd)"
 echo "홈 디렉토리: $HOME"
 
+# 필수 패키지 설치
+sudo apt-get update
+sudo apt-get install nvidia-cuda-toolkit
+
+read -p "윈도우 파워셸을 관리자권한으로 열어서 다음 명령어들을 입력하세요"
+echo "wsl --set-default-version 2"
+echo "wsl --shutdown"
+echo "wsl --update"
+
 # 작업 디렉토리 생성 및 이동
 WORK_DIR="$HOME/lumoz_miner"
 mkdir -p "$WORK_DIR"
@@ -33,8 +42,8 @@ fi
 cd moz_prover
 
 # inner_prover.sh 파일 수정
-sed -i "s/WALLET_ADDRESS=.*/WALLET_ADDRESS=$wallet_address/" inner_prover.sh
-sed -i "s/WORKER_NAME=.*/WORKER_NAME=$miner_name/" inner_prover.sh
+sed -i "s/reward_address=.*/reward_address=$wallet_address/" inner_prover.sh
+sed -i "s/custom_name=.*/custom_name=\"$miner_name\"/" inner_prover.sh
 
 # 실행 권한 부여 및 마이너 시작
 chmod +x run_prover.sh
