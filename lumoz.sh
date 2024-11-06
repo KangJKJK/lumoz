@@ -53,3 +53,5 @@ chmod +x run_prover.sh
 echo "3초 후 마이닝 로그를 표시합니다..."
 sleep 3
 tail -f prover.log 
+
+echo "해당사이트에서 대시보드를 확인하세요: https://zk.work/en/lumoz/address/0xBCED64975874011B30070Fdb82DcF7332F5E5E6F/dashboard"
