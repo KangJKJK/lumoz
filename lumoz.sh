@@ -154,7 +154,7 @@ elif [ "$option" == "3" ]; then
     ps aux | grep moz_prover
     pgrep -f run_prover.sh
 
-    
+    nvidia-smi
     # 사용자에게 PID 입력 받기
     read -p "종료할 프로세스의 PID를 입력하세요: " pid_to_kill
 
