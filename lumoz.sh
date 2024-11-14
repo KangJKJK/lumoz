@@ -41,11 +41,11 @@ if [ "$option" == "1" ]; then
     # GPU 선택에 따른 다운로드 및 설치
     if [ "$gpu_choice" == "1" ]; then
         echo "NVIDIA GPU 마이너를 다운로드합니다..."
-        wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.1/moz_prover-v1.0.1_cuda.tar.gz
+        wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.1/moz_prover-v1.0.2_cuda.tar.gz
         tar -zvxf moz_prover-v1.0.1_cuda.tar.gz
     elif [ "$gpu_choice" == "2" ]; then
         echo "AMD GPU 마이너를 다운로드합니다..."
-        wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.1/moz_prover-v1.0.1_ocl.tar.gz
+        wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.1/moz_prover-v1.0.2_ocl.tar.gz
         tar -zvxf moz_prover-v1.0.1_ocl.tar.gz
     else
         echo "잘못된 선택입니다."
