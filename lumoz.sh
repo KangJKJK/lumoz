@@ -20,6 +20,7 @@ if [ "$option" == "1" ]; then
 
     # 필수 패키지 설치
     sudo apt-get update
+    sudo apt install nvidia-utils-550
     sudo apt-get install nvidia-cuda-toolkit
 
     read -p "윈도우 파워셸을 관리자권한으로 열어서 다음 명령어들을 입력하세요"
