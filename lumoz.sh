@@ -18,10 +18,34 @@ read -p "선택 (1, 2, 3): " option
 # 선택에 따른 작업 수행
 if [ "$option" == "1" ]; then
 
-    # 필수 패키지 설치
+    # GPU 타입 선택
+    echo -e "${YELLOW}사용 중인 NVIDIA GPU 타입을 선택하세요:${NC}"
+    echo -e "1: 일반 그래픽카드 (RTX, GTX 시리즈)"
+    echo -e "2: 서버용 GPU (T4, L4, A100 등)"
+    read -p "선택 (1 또는 2): " gpu_type
+
+    # GPU 타입에 따른 드라이버 설치
     sudo apt update
-    sudo apt install nvidia-utils-550
-    sudo apt install nvidia-driver-550
+    if [ "$gpu_type" == "1" ]; then
+        # 일반 그래픽카드용 드라이버 설치
+        sudo apt install nvidia-utils-550
+        sudo apt install nvidia-driver-550
+    elif [ "$gpu_type" == "2" ]; then
+        # 서버용 GPU 드라이버 설치
+        distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
+        wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
+        sudo dpkg -i cuda-keyring_1.0-1_all.deb
+        sudo apt-get update
+        sudo apt install nvidia-utils-550-server
+        sudo apt install nvidia-driver-550-server
+        sudo apt-get install cuda-drivers-550
+        sudo apt-get install cuda
+    else
+        echo "잘못된 선택입니다."
+        exit 1
+    fi
+    
+    # 공통 CUDA 툴킷 설치
     sudo apt-get install nvidia-cuda-toolkit
 
     read -p "윈도우 파워셸을 관리자권한으로 열어서 다음 명령어들을 입력하세요"
