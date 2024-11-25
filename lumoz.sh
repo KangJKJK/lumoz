@@ -30,6 +30,7 @@ if [ "$option" == "1" ]; then
         # 일반 그래픽카드용 드라이버 설치
         sudo apt install nvidia-utils-550
         sudo apt install nvidia-driver-550
+        sudo apt-get install cuda-drivers-550    
     elif [ "$gpu_type" == "2" ]; then
         # 서버용 GPU 드라이버 설치
         distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
