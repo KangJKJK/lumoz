@@ -31,7 +31,7 @@ if [ "$option" == "1" ]; then
         sudo apt install nvidia-utils-550
         sudo apt install nvidia-driver-550
         sudo apt-get install cuda-drivers-550 
-        sudo apt-get install cuda-12-2
+        sudo apt-get install cuda-12-3
     elif [ "$gpu_type" == "2" ]; then
         # 서버용 GPU 드라이버 설치
         distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
@@ -41,7 +41,7 @@ if [ "$option" == "1" ]; then
         sudo apt install nvidia-utils-550-server
         sudo apt install nvidia-driver-550-server
         sudo apt-get install cuda-drivers-550
-        sudo apt-get install cuda-12-2
+        sudo apt-get install cuda-12-3
     else
         echo "잘못된 선택입니다."
         exit 1
