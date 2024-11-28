@@ -107,6 +107,7 @@ elif [ "$option" == "2" ]; then
     read -p "현재 버전을 입력하세요 (예: v1.0.1): " version
 
     # 작업 디렉토리 생성 및 이동
+    sudo rm -rf ~/lumoz_miner
     WORK_DIR="$HOME/lumoz_miner"
     mkdir -p "$WORK_DIR"
     cd "$WORK_DIR"
