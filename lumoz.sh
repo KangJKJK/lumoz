@@ -56,8 +56,9 @@ if [ "$option" == "1" ]; then
 
     # 작업 디렉토리 생성 및 이동
     WORK_DIR="$HOME/lumoz_miner"
-    sudo  mkdir -p "$WORK_DIR"
+    mkdir -p "$WORK_DIR"
     cd "$WORK_DIR"
+    
     echo "작업 디렉토리로 이동: $WORK_DIR"
 
     # 사용자 입력 받기
