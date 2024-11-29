@@ -158,13 +158,15 @@ if [ "$option" == "1" ]; then
         chmod +x moz_prover
 
         echo -e "${YELLOW}마이너를 시작합니다...${NC}"
-        ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name &
+        ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name
     
-        # 로그 확인 (경로 수정)
+        # 로그 확인
         echo "3초 후 마이닝 로그를 표시합니다..."
         sleep 3
-        tail -f "$WORK_DIR/moz_prover/prover.log"
-    
+
+        # 로그 실시간 확인
+        tail -f prover.log
+
         echo "해당사이트에서 대시보드를 확인하세요: https://zk.work/en/lumoz/"
         echo -e "${GREEN}스크립트작성자: https://t.me/kjkresearch${NC}"
 
@@ -222,12 +224,14 @@ elif [ "$option" == "2" ]; then
     chmod +x moz_prover
 
     echo -e "${YELLOW}마이너를 시작합니다...${NC}"
-    ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name &
+    ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name
 
-    # 로그 확인 (경로 수정)
+    # 로그 확인
     echo "3초 후 마이닝 로그를 표시합니다..."
     sleep 3
-    tail -f "$WORK_DIR/moz_prover/prover.log"
+
+    # 로그 실시간 확인
+    tail -f prover.log
 
     echo "해당 사이트에서 대시보드를 확인하세요: https://zk.work/en/lumoz/"
     echo -e "${GREEN}스크립트 작성자: https://t.me/kjkresearch${NC}"
