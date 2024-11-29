@@ -26,6 +26,9 @@ echo -e "${GREEN}2: Lumoz 노드 업데이트${NC}"
 echo -e "${RED}3: Lumoz 노드 삭제${NC}"
 read -p "선택 (1, 2, 3): " option
 
+if [ "$option" == "1" ]; then
+    echo "Lumoz 노드 새로 설치를 선택했습니다."
+    
     echo -e "${YELLOW}NVIDIA 드라이버 설치 옵션을 선택하세요:${NC}"
     echo -e "1: 일반 그래픽카드 (RTX, GTX 시리즈) 드라이버 설치"
     echo -e "2: 서버용 GPU (T4, L4, A100 등) 드라이버 설치"
