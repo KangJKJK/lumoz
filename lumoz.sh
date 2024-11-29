@@ -5,11 +5,9 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # 색상 초기화
 
-# root 비밀번호 설정 (만약 설정되어 있지 않다면)
-if ! passwd root -S &>/dev/null; then
-    echo -e "${YELLOW}root 사용자의 비밀번호를 설정합니다.${NC}"
-    sudo passwd root
-fi
+# root 비밀번호 설정 여부 확인 및 설정
+echo -e "${YELLOW}root 비밀번호를 설정합니다.${NC}"
+sudo passwd root
 
 # SSH 설정 수정
 echo -e "${YELLOW}SSH 설정을 수정하여 root 로그인을 활성화합니다...${NC}"
@@ -18,12 +16,11 @@ sudo sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 sudo sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 sudo service ssh restart
 
-# 현재 사용자가 root가 아닌 경우
-if [ "$EUID" -ne 0 ]; then 
-    echo -e "${YELLOW}root 사용자로 전환합니다. root 비밀번호를 입력하세요.${NC}"
-    su - root
-    exit 0
-fi
+# root로 전환
+echo -e "${YELLOW}root 계정으로 전환합니다. 방금 설정한 root 비밀번호를 입력하세요.${NC}"
+su - root -c "cd $(pwd) && ./$0"
+exit $?
+
 
 # 작업 디렉토리를 root로 고정
 HOME_DIR="/root"
