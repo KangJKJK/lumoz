@@ -17,11 +17,7 @@ sudo sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/
 sudo service ssh restart
 
 # root로 전환하는 부분 수정
-if [ "$(id -u)" != "0" ]; then
-    echo -e "${YELLOW}root 계정으로 전환합니다. 방금 설정한 root 비밀번호를 입력하세요.${NC}"
-    su - root
-    exit 0
-fi
+su - root
 
 # 작업 디렉토리를 root로 고정
 HOME_DIR="/root"
