@@ -5,11 +5,24 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # 색상 초기화
 
-# root 권한 확인
+# root 비밀번호 설정 (만약 설정되어 있지 않다면)
+if ! passwd root -S &>/dev/null; then
+    echo -e "${YELLOW}root 사용자의 비밀번호를 설정합니다.${NC}"
+    sudo passwd root
+fi
+
+# SSH 설정 수정
+echo -e "${YELLOW}SSH 설정을 수정하여 root 로그인을 활성화합니다...${NC}"
+sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+sudo sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+sudo sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+sudo service ssh restart
+
+# 현재 사용자가 root가 아닌 경우
 if [ "$EUID" -ne 0 ]; then 
-    echo "이 스크립트는 root 권한으로 실행해야 합니다."
-    echo "sudo bash lumoz.sh 로 다시 실행해주세요."
-    exit 1
+    echo -e "${YELLOW}root 사용자로 전환합니다. root 비밀번호를 입력하세요.${NC}"
+    su - root
+    exit 0
 fi
 
 # 작업 디렉토리를 root로 고정
