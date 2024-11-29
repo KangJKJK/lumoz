@@ -16,10 +16,10 @@ sudo sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 sudo sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
 sudo service ssh restart
 
-# root로 전환
+# root로 전환하는 부분 수정
 if [ "$(id -u)" != "0" ]; then
     echo -e "${YELLOW}root 계정으로 전환합니다. 방금 설정한 root 비밀번호를 입력하세요.${NC}"
-    exec su - root -c "cd $(pwd) && ./$0"
+    su - root
     exit 0
 fi
 
