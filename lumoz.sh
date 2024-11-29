@@ -26,49 +26,64 @@ echo -e "${GREEN}2: Lumoz 노드 업데이트${NC}"
 echo -e "${RED}3: Lumoz 노드 삭제${NC}"
 read -p "선택 (1, 2, 3): " option
 
-# 선택에 따른 작업 수행
-if [ "$option" == "1" ]; then
     echo -e "${YELLOW}NVIDIA 드라이버 설치 옵션을 선택하세요:${NC}"
     echo -e "1: 일반 그래픽카드 (RTX, GTX 시리즈) 드라이버 설치"
     echo -e "2: 서버용 GPU (T4, L4, A100 등) 드라이버 설치"
     echo -e "3: 기존 드라이버 및 CUDA 완전 제거"
     echo -e "4: 드라이버 설치 건너뛰기"
-    read -p "선택 (1, 2, 3, 4): " driver_option
+    echo -e "5: 다음 단계로 이동"
     
-    case $driver_option in
-        1)
-            sudo apt update
-            sudo apt install -y nvidia-utils-550
-            sudo apt install -y nvidia-driver-550
-            sudo apt-get install -y cuda-drivers-550 
-            sudo apt-get install -y cuda-12-3
-            ;;
-        2)
-            distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
-            wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
-            sudo dpkg -i cuda-keyring_1.0-1_all.deb
-            sudo apt-get update
-            sudo apt install -y nvidia-utils-550-server
-            sudo apt install -y nvidia-driver-550-server
-            sudo apt-get install -y cuda-12-3
-            ;;
-        3)
-            echo "기존 드라이버 및 CUDA를 제거합니다..."
-            sudo apt-get purge -y nvidia*
-            sudo apt-get purge -y cuda*
-            sudo apt-get purge -y libnvidia*
-            sudo apt autoremove -y
-            sudo rm -rf /usr/local/cuda*
-            echo "드라이버 및 CUDA가 완전히 제거되었습니다."
-            ;;
-        4)
-            echo "드라이버 설치를 건너뜁니다."
-            ;;
-        *)
-            echo "잘못된 선택입니다."
-            exit 1
-            ;;
-    esac
+    while true; do
+        read -p "선택 (1, 2, 3, 4, 5): " driver_option
+        
+        case $driver_option in
+            1)
+                sudo apt update
+                sudo apt install -y nvidia-utils-550
+                sudo apt install -y nvidia-driver-550
+                sudo apt-get install -y cuda-drivers-550 
+                sudo apt-get install -y cuda-12-3
+                ;;
+            2)
+                distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
+                wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
+                sudo dpkg -i cuda-keyring_1.0-1_all.deb
+                sudo apt-get update
+                sudo apt install -y nvidia-utils-550-server
+                sudo apt install -y nvidia-driver-550-server
+                sudo apt-get install -y cuda-12-3
+                ;;
+            3)
+                echo "기존 드라이버 및 CUDA를 제거합니다..."
+                sudo apt-get purge -y nvidia*
+                sudo apt-get purge -y cuda*
+                sudo apt-get purge -y libnvidia*
+                sudo apt autoremove -y
+                sudo rm -rf /usr/local/cuda*
+                echo "드라이버 및 CUDA가 완전히 제거되었습니다."
+                ;;
+            4)
+                echo "드라이버 설치를 건너뜁니다."
+                ;;
+            5)
+                echo "다음 단계로 이동합니다."
+                break
+                ;;
+            *)
+                echo "잘못된 선택입니다. 다시 선택해주세요."
+                continue
+                ;;
+        esac
+        
+        if [ "$driver_option" != "5" ]; then
+            echo -e "\n${YELLOW}NVIDIA 드라이버 설치 옵션을 선택하세요:${NC}"
+            echo -e "1: 일반 그래픽카드 (RTX, GTX 시리즈) 드라이버 설치"
+            echo -e "2: 서버용 GPU (T4, L4, A100 등) 드라이버 설치"
+            echo -e "3: 기존 드라이버 및 CUDA 완전 제거"
+            echo -e "4: 드라이버 설치 건너뛰기"
+            echo -e "5: 다음 단계로 이동"
+        fi
+    done
     
         # CUDA 툴킷 설치 여부 확인
         if command -v nvcc &> /dev/null; then
