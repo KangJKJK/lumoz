@@ -183,6 +183,17 @@ elif [ "$option" == "2" ]; then
 elif [ "$option" == "3" ]; then
     echo "Lumoz 노드 삭제를 선택했습니다."
     
+    # 1. 먼저 실행 중인 모든 관련 프로세스 확인
+    ps aux | grep "[m]oz_prover"
+
+    # 2. sudo를 사용하여 프로세스 종료
+    sudo kill $(pgrep moz_prover)
+    sudo kill $(pgrep run_prover)
+
+    # 3. 여전히 실행 중이라면 강제 종료
+    sudo pkill -9 -f "moz_prover"
+    sudo pkill -9 -f "run_prover.sh"
+    
     # 실제 moz_prover 프로세스 찾기 및 종료
     moz_pid=$(ps aux | grep "[m]oz_prover" | awk '{print $2}')
     if [ ! -z "$moz_pid" ]; then
