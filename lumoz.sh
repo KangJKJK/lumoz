@@ -6,7 +6,18 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # 색상 초기화
 
 echo "현재 작업 디렉토리: $(pwd)"
-echo "홈 디렉토리: $HOME"
+echo "실제 사용자: $ACTUAL_USER"
+echo "홈 디렉토리: $HOME_DIR"
+
+# 초기 사용자 및 경로 설정
+CURRENT_USER=$(whoami)
+if [ "$CURRENT_USER" = "root" ]; then
+    ACTUAL_USER=$(logname 2>/dev/null || echo $SUDO_USER)
+    HOME_DIR="/home/$ACTUAL_USER"
+else
+    ACTUAL_USER=$CURRENT_USER
+    HOME_DIR="$HOME"
+fi
 
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
@@ -22,59 +33,42 @@ if [ "$option" == "1" ]; then
     echo -e "2: 서버용 GPU (T4, L4, A100 등) 드라이버 설치"
     echo -e "3: 기존 드라이버 및 CUDA 완전 제거"
     echo -e "4: 드라이버 설치 건너뛰기"
-    echo -e "5: 다음 단계로 이동"
+    read -p "선택 (1, 2, 3, 4): " driver_option
     
-    while true; do
-        read -p "선택 (1, 2, 3, 4, 5): " driver_option
-        
-        case $driver_option in
-            1)
-                sudo apt update
-                sudo apt install -y nvidia-utils-550
-                sudo apt install -y nvidia-driver-550
-                sudo apt-get install -y cuda-drivers-550 
-                sudo apt-get install -y cuda-12-3
-                ;;
-            2)
-                distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
-                wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
-                sudo dpkg -i cuda-keyring_1.0-1_all.deb
-                sudo apt-get update
-                sudo apt install -y nvidia-utils-550-server
-                sudo apt install -y nvidia-driver-550-server
-                sudo apt-get install -y cuda-12-3
-                ;;
-            3)
-                echo "기존 드라이버 및 CUDA를 제거합니다..."
-                sudo apt-get purge -y nvidia*
-                sudo apt-get purge -y cuda*
-                sudo apt-get purge -y libnvidia*
-                sudo apt autoremove -y
-                sudo rm -rf /usr/local/cuda*
-                echo "드라이버 및 CUDA가 완전히 제거되었습니다."
-                ;;
-            4)
-                echo "드라이버 설치를 건너뜁니다."
-                ;;
-            5)
-                echo "다음 단계로 이동합니다."
-                break
-                ;;
-            *)
-                echo "잘못된 선택입니다. 다시 선택해주세요."
-                continue
-                ;;
-        esac
-        
-        if [ "$driver_option" != "5" ]; then
-            echo -e "\n${YELLOW}NVIDIA 드라이버 설치 옵션을 선택하세요:${NC}"
-            echo -e "1: 일반 그래픽카드 (RTX, GTX 시리즈) 드라이버 설치"
-            echo -e "2: 서버용 GPU (T4, L4, A100 등) 드라이버 설치"
-            echo -e "3: 기존 드라이버 및 CUDA 완전 제거"
-            echo -e "4: 드라이버 설치 건너뛰기"
-            echo -e "5: 다음 단계로 이동"
-        fi
-    done
+    case $driver_option in
+        1)
+            sudo apt update
+            sudo apt install -y nvidia-utils-550
+            sudo apt install -y nvidia-driver-550
+            sudo apt-get install -y cuda-drivers-550 
+            sudo apt-get install -y cuda-12-3
+            ;;
+        2)
+            distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
+            wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
+            sudo dpkg -i cuda-keyring_1.0-1_all.deb
+            sudo apt-get update
+            sudo apt install -y nvidia-utils-550-server
+            sudo apt install -y nvidia-driver-550-server
+            sudo apt-get install -y cuda-12-3
+            ;;
+        3)
+            echo "기존 드라이버 및 CUDA를 제거합니다..."
+            sudo apt-get purge -y nvidia*
+            sudo apt-get purge -y cuda*
+            sudo apt-get purge -y libnvidia*
+            sudo apt autoremove -y
+            sudo rm -rf /usr/local/cuda*
+            echo "드라이버 및 CUDA가 완전히 제거되었습니다."
+            ;;
+        4)
+            echo "드라이버 설치를 건너뜁니다."
+            ;;
+        *)
+            echo "잘못된 선택입니다."
+            exit 1
+            ;;
+    esac
     
         # CUDA 툴킷 설치 여부 확인
         if command -v nvcc &> /dev/null; then
@@ -94,9 +88,10 @@ if [ "$option" == "1" ]; then
         echo "wsl --shutdown"
         echo "wsl --update"
     
-        # 작업 디렉토리 생성 및 이동
-        WORK_DIR="$HOME/lumoz_miner"
+        # 작업 디렉토리 생성 및 이동 부분 수정
+        WORK_DIR="$HOME_DIR/lumoz_miner"
         mkdir -p "$WORK_DIR"
+        chown -R $ACTUAL_USER:$ACTUAL_USER "$WORK_DIR"
         cd "$WORK_DIR"
         
         echo "작업 디렉토리로 이동: $WORK_DIR"
@@ -111,10 +106,12 @@ if [ "$option" == "1" ]; then
             echo "NVIDIA GPU 마이너를 다운로드합니다..."
             wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.2/moz_prover-v1.0.2_cuda.tar.gz
             tar -zvxf moz_prover-v1.0.2_cuda.tar.gz
+            chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
         elif [ "$gpu_choice" == "2" ]; then
             echo "AMD GPU 마이너를 다운로드합니다..."
             wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.2/moz_prover-v1.0.2_ocl.tar.gz
             tar -zvxf moz_prover-v1.0.2_ocl.tar.gz
+            chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
         else
             echo "잘못된 선택입니다."
             exit 1
@@ -147,12 +144,13 @@ elif [ "$option" == "2" ]; then
     read -p "현재 버전을 입력하세요 (예: v1.0.1): " version
     export VERSION=$version
 
-    # 작업 디렉토리 생성 및 이동
-    sudo rm -rf ~/lumoz_miner
-    WORK_DIR="$HOME/lumoz_miner"
-    mkdir -p "$WORK_DIR"
+    # 작업 디렉토리 생성 및 이동 부분 수정
+    WORK_DIR="$HOME_DIR/lumoz_miner"
+    if [ ! -d "$WORK_DIR" ]; then
+        mkdir -p "$WORK_DIR"
+        chown -R $ACTUAL_USER:$ACTUAL_USER "$WORK_DIR"
+    fi
     cd "$WORK_DIR"
-    echo "작업 디렉토리로 이동: $WORK_DIR"
 
     # GPU 종류 선택
     echo "GPU 종류를 선택하세요:"
@@ -171,7 +169,7 @@ elif [ "$option" == "2" ]; then
         # 다운로드한 파일 압축 해제
         echo "NVIDIA 마이너 압축 해제 중..."
         tar -zvxf "moz_prover-$VERSION_cuda.tar.gz"
-        cd "moz_prover" || exit
+        chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
 
     elif [ "$gpu_choice" == "2" ]; then
         echo "zkwork AMD miner 다운로드 중..."
@@ -180,7 +178,7 @@ elif [ "$option" == "2" ]; then
         # 다운로드한 파일 압축 해제
         echo "AMD 마이너 압축 해제 중..."
         tar -zvxf "moz_prover-$VERSION_ocl.tar.gz"
-        cd "moz_prover" || exit
+        chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
 
     else
         echo "잘못된 선택입니다. 스크립트를 종료합니다."
@@ -209,6 +207,12 @@ elif [ "$option" == "2" ]; then
 
 elif [ "$option" == "3" ]; then
     echo "Lumoz 노드 삭제를 선택했습니다."
+
+    # 작업 디렉토리 삭제
+    if [ -d "$HOME_DIR/lumoz_miner" ]; then
+        rm -rf "$HOME_DIR/lumoz_miner"
+        echo "Lumoz 마이너 디렉토리가 삭제되었습니다."
+    fi
     
     # 1. 먼저 실행 중인 모든 관련 프로세스 확인
     ps aux | grep "[m]oz_prover"
@@ -218,8 +222,8 @@ elif [ "$option" == "3" ]; then
     sudo kill $(pgrep run_prover)
 
     # 3. 여전히 실행 중이라면 강제 종료
-    sudo pkill -9 -f "moz_prover"
-    sudo pkill -9 -f "run_prover.sh"
+    sudo pkill -f "moz_prover"
+    sudo pkill -f "run_prover.sh"
     
     # 실제 moz_prover 프로세스 찾기 및 종료
     moz_pid=$(ps aux | grep "[m]oz_prover" | awk '{print $2}')
