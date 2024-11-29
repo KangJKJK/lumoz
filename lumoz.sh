@@ -5,19 +5,19 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # 색상 초기화
 
-echo "현재 작업 디렉토리: $(pwd)"
-echo "실제 사용자: $ACTUAL_USER"
-echo "홈 디렉토리: $HOME_DIR"
-
-# 초기 사용자 및 경로 설정
-CURRENT_USER=$(whoami)
-if [ "$CURRENT_USER" = "root" ]; then
-    ACTUAL_USER=$(logname 2>/dev/null || echo $SUDO_USER)
-    HOME_DIR="/home/$ACTUAL_USER"
-else
-    ACTUAL_USER=$CURRENT_USER
-    HOME_DIR="$HOME"
+# root 권한 확인
+if [ "$EUID" -ne 0 ]; then 
+    echo "이 스크립트는 root 권한으로 실행해야 합니다."
+    echo "sudo bash lumoz.sh 로 다시 실행해주세요."
+    exit 1
 fi
+
+# 작업 디렉토리를 root로 고정
+HOME_DIR="/root"
+WORK_DIR="/root/lumoz_miner"
+
+echo "현재 작업 디렉토리: $(pwd)"
+echo "홈 디렉토리: $HOME_DIR"
 
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
@@ -91,18 +91,10 @@ read -p "선택 (1, 2, 3): " option
             nvcc --version
             read -p "CUDA 툴킷을 다시 설치하시겠습니까? (y/n): " reinstall_cuda
             if [ "$reinstall_cuda" == "y" ]; then
-                # dpkg 문제 해결을 위한 자동 실행
-                sudo dpkg --configure -a
-                sudo apt-get update
-                sudo apt-get install -f -y
                 sudo apt-get install -y nvidia-cuda-toolkit
             fi
         else
             echo -e "${YELLOW}CUDA 툴킷을 설치합니다...${NC}"
-            # dpkg 문제 해결을 위한 자동 실행
-            sudo dpkg --configure -a
-            sudo apt-get update
-            sudo apt-get install -f -y
             sudo apt-get install -y nvidia-cuda-toolkit
         fi
 
@@ -112,9 +104,7 @@ read -p "선택 (1, 2, 3): " option
         echo "wsl --update"
     
         # 작업 디렉토리 생성 및 이동 부분 수정
-        WORK_DIR="$HOME_DIR/lumoz_miner"
         mkdir -p "$WORK_DIR"
-        chown -R $ACTUAL_USER:$ACTUAL_USER "$WORK_DIR"
         cd "$WORK_DIR"
         
         echo "작업 디렉토리로 이동: $WORK_DIR"
@@ -129,12 +119,10 @@ read -p "선택 (1, 2, 3): " option
             echo "NVIDIA GPU 마이너를 다운로드합니다..."
             wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.2/moz_prover-v1.0.2_cuda.tar.gz
             tar -zvxf moz_prover-v1.0.2_cuda.tar.gz
-            chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
         elif [ "$gpu_choice" == "2" ]; then
             echo "AMD GPU 마이너를 다운로드합니다..."
             wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.2/moz_prover-v1.0.2_ocl.tar.gz
             tar -zvxf moz_prover-v1.0.2_ocl.tar.gz
-            chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
         else
             echo "잘못된 선택입니다."
             exit 1
@@ -168,11 +156,7 @@ elif [ "$option" == "2" ]; then
     export VERSION=$version
 
     # 작업 디렉토리 생성 및 이동 부분 수정
-    WORK_DIR="$HOME_DIR/lumoz_miner"
-    if [ ! -d "$WORK_DIR" ]; then
-        mkdir -p "$WORK_DIR"
-        chown -R $ACTUAL_USER:$ACTUAL_USER "$WORK_DIR"
-    fi
+    mkdir -p "$WORK_DIR"
     cd "$WORK_DIR"
 
     # GPU 종류 선택
@@ -192,8 +176,6 @@ elif [ "$option" == "2" ]; then
         # 다운로드한 파일 압축 해제
         echo "NVIDIA 마이너 압축 해제 중..."
         tar -zvxf "moz_prover-$VERSION_cuda.tar.gz"
-        chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
-
     elif [ "$gpu_choice" == "2" ]; then
         echo "zkwork AMD miner 다운로드 중..."
         wget "https://github.com/6block/zkwork_moz_prover/releases/download/$VERSION/moz_prover-$VERSION_ocl.tar.gz"
@@ -201,8 +183,6 @@ elif [ "$option" == "2" ]; then
         # 다운로드한 파일 압축 해제
         echo "AMD 마이너 압축 해제 중..."
         tar -zvxf "moz_prover-$VERSION_ocl.tar.gz"
-        chown -R $ACTUAL_USER:$ACTUAL_USER moz_prover
-
     else
         echo "잘못된 선택입니다. 스크립트를 종료합니다."
         exit 1
@@ -232,8 +212,8 @@ elif [ "$option" == "3" ]; then
     echo "Lumoz 노드 삭제를 선택했습니다."
 
     # 작업 디렉토리 삭제
-    if [ -d "$HOME_DIR/lumoz_miner" ]; then
-        rm -rf "$HOME_DIR/lumoz_miner"
+    if [ -d "$WORK_DIR" ]; then
+        rm -rf "$WORK_DIR"
         echo "Lumoz 마이너 디렉토리가 삭제되었습니다."
     fi
     
