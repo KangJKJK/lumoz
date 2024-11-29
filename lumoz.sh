@@ -155,9 +155,12 @@ if [ "$option" == "1" ]; then
     
         # 실행 권한 부여 및 마이너 시작
         chmod +x run_prover.sh
-        ./run_prover.sh &
+        chmod +x moz_prover
+
+        echo -e "${YELLOW}마이너를 시작합니다...${NC}"
+        ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name &
     
-        # 로그 확인
+        # 로그 확인 (경로 수정)
         echo "3초 후 마이닝 로그를 표시합니다..."
         sleep 3
         tail -f "$WORK_DIR/moz_prover/prover.log"
@@ -216,9 +219,12 @@ elif [ "$option" == "2" ]; then
 
     # 실행 권한 부여 및 마이너 시작
     chmod +x run_prover.sh
-    ./run_prover.sh &
+    chmod +x moz_prover
 
-    # 로그 확인
+    echo -e "${YELLOW}마이너를 시작합니다...${NC}"
+    ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name &
+
+    # 로그 확인 (경로 수정)
     echo "3초 후 마이닝 로그를 표시합니다..."
     sleep 3
     tail -f "$WORK_DIR/moz_prover/prover.log"
