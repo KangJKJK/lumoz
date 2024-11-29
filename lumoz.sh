@@ -160,7 +160,7 @@ if [ "$option" == "1" ]; then
         # 로그 확인
         echo "3초 후 마이닝 로그를 표시합니다..."
         sleep 3
-        tail -f prover.log 
+        tail -f "$WORK_DIR/moz_prover/prover.log"
     
         echo "해당사이트에서 대시보드를 확인하세요: https://zk.work/en/lumoz/"
         echo -e "${GREEN}스크립트작성자: https://t.me/kjkresearch${NC}"
@@ -221,7 +221,7 @@ elif [ "$option" == "2" ]; then
     # 로그 확인
     echo "3초 후 마이닝 로그를 표시합니다..."
     sleep 3
-    tail -f prover.log
+    tail -f "$WORK_DIR/moz_prover/prover.log"
 
     echo "해당 사이트에서 대시보드를 확인하세요: https://zk.work/en/lumoz/"
     echo -e "${GREEN}스크립트 작성자: https://t.me/kjkresearch${NC}"
