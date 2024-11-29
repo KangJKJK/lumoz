@@ -89,13 +89,12 @@ if [ "$option" == "1" ]; then
                 ;;
         esac
         
-        if [ "$driver_option" != "5" ]; then
+        if [ "$driver_option" != "4" ]; then
             echo -e "\n${YELLOW}NVIDIA 드라이버 설치 옵션을 선택하세요:${NC}"
             echo -e "1: 일반 그래픽카드 (RTX, GTX 시리즈) 드라이버 설치"
             echo -e "2: 서버용 GPU (T4, L4, A100 등) 드라이버 설치"
             echo -e "3: 기존 드라이버 및 CUDA 완전 제거"
             echo -e "4: 드라이버 설치 건너뛰기"
-            echo -e "5: 다음 단계로 이동"
         fi
     done
     
