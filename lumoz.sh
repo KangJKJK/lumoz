@@ -182,22 +182,22 @@ elif [ "$option" == "2" ]; then
 
 elif [ "$option" == "3" ]; then
     echo "Lumoz 노드 삭제를 선택했습니다."
-
-    cd moz_prover
-    sudo pkill -f moz_prover
-    ps aux | grep moz_prover
-    pgrep -f run_prover.sh
-
-    nvidia-smi
-    # 사용자에게 PID 입력 받기
-    read -p "종료할 프로세스의 PID를 입력하세요: " pid_to_kill
-
-    # 입력받은 PID로 프로세스 종료
-    if [ -n "$pid_to_kill" ]; then
-        sudo kill "$pid_to_kill"
-        echo "프로세스 $pid_to_kill가 종료되었습니다."
+    
+    # 실제 moz_prover 프로세스 찾기 및 종료
+    moz_pid=$(ps aux | grep "[m]oz_prover" | awk '{print $2}')
+    if [ ! -z "$moz_pid" ]; then
+        echo "moz_prover 프로세스(PID: $moz_pid)를 종료합니다..."
+        sudo kill $moz_pid
+        sleep 2
+        
+        # 프로세스가 여전히 실행 중이면 강제 종료
+        if ps -p $moz_pid > /dev/null; then
+            echo "프로세스를 강제 종료합니다..."
+            sudo kill -9 $moz_pid
+        fi
+        echo "프로세스가 종료되었습니다."
     else
-        echo "유효하지 않은 PID입니다."
+        echo "실행 중인 moz_prover 프로세스를 찾을 수 없습니다."
     fi
 
 else
