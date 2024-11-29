@@ -91,11 +91,19 @@ read -p "선택 (1, 2, 3): " option
             nvcc --version
             read -p "CUDA 툴킷을 다시 설치하시겠습니까? (y/n): " reinstall_cuda
             if [ "$reinstall_cuda" == "y" ]; then
-                sudo apt-get install nvidia-cuda-toolkit
+                # dpkg 문제 해결을 위한 자동 실행
+                sudo dpkg --configure -a
+                sudo apt-get update
+                sudo apt-get install -f -y
+                sudo apt-get install -y nvidia-cuda-toolkit
             fi
         else
             echo -e "${YELLOW}CUDA 툴킷을 설치합니다...${NC}"
-            sudo apt-get install nvidia-cuda-toolkit
+            # dpkg 문제 해결을 위한 자동 실행
+            sudo dpkg --configure -a
+            sudo apt-get update
+            sudo apt-get install -f -y
+            sudo apt-get install -y nvidia-cuda-toolkit
         fi
 
         read -p "윈도우라면 파워셸을 관리자권한으로 열어서 다음 명령어들을 입력하세요"
