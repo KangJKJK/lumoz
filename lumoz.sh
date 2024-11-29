@@ -255,6 +255,7 @@ elif [ "$option" == "3" ]; then
     # 3. 여전히 실행 중이라면 강제 종료
     sudo pkill -f "moz_prover"
     sudo pkill -f "run_prover.sh"
+    sudo pkill -9 moz_prover
     
     # 실제 moz_prover 프로세스 찾기 및 종료
     moz_pid=$(ps aux | grep "[m]oz_prover" | awk '{print $2}')
