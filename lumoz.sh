@@ -27,10 +27,6 @@ if [ "$is_root" = "n" ]; then
     exit 0
 fi
 
-# 작업 디렉토리를 root로 고정
-HOME_DIR="/root"
-WORK_DIR="/root/lumoz_miner"
-
 echo "현재 작업 디렉토리: $(pwd)"
 echo "홈 디렉토리: $HOME_DIR"
 
