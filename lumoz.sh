@@ -133,7 +133,8 @@ if [ "$option" == "1" ]; then
         sudo ufw allow 47721/udp  # avahi-daemon
 
         echo -e "${YELLOW}마이너를 시작합니다...${NC}"
-        ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name
+        sudo touch prover.log && sudo chown goohan890d:goohan890d prover.log && sudo chmod 644 prover.log
+        ./run_prover.sh
     
         # 로그 확인
         echo "3초 후 마이닝 로그를 표시합니다..."
