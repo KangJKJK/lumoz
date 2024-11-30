@@ -27,6 +27,13 @@ if [ "$is_root" = "n" ]; then
     exit 0
 fi
 
+# 작업 디렉토리를 root로 고정
+HOME_DIR="/root"
+WORK_DIR="/root/lumoz_miner"
+
+echo "현재 작업 디렉토리: $(pwd)"
+echo "홈 디렉토리: $HOME_DIR"
+
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: Lumoz 노드 새로 설치${NC}"
@@ -109,12 +116,6 @@ if [ "$option" == "1" ]; then
         echo "wsl --shutdown"
         echo "wsl --update"
     
-        # 작업 디렉토리 생성 및 이동 부분 수정
-        mkdir -p "$WORK_DIR"
-        cd "$WORK_DIR"
-        
-        echo "작업 디렉토리로 이동: $WORK_DIR"
-    
         # 사용자 입력 받기
         read -p "GPU 종류를 선택하세요 (1: NVIDIA, 2: AMD): " gpu_choice
         read -p "Lumoz 지갑 주소를 입력하세요: " wallet_address
@@ -145,6 +146,21 @@ if [ "$option" == "1" ]; then
         chmod +x run_prover.sh
         chmod +x moz_prover
 
+        # UFW 활성화 (아직 활성화되지 않은 경우)
+        sudo ufw enable
+        
+        # TCP 포트 허용
+        sudo ufw allow 22/tcp   # SSH
+        sudo ufw allow 53/tcp   # DNS
+        
+        # UDP 포트 허용
+        sudo ufw allow 54125/udp  # avahi-daemon
+        sudo ufw allow 5353/udp   # avahi-daemon
+        sudo ufw allow 53/udp     # DNS (systemd-resolve)
+        sudo ufw allow 68/udp     # DHCP Client
+        sudo ufw allow 323/udp    # chronyd
+        sudo ufw allow 47721/udp  # avahi-daemon
+
         echo -e "${YELLOW}마이너를 시작합니다...${NC}"
         ./moz_prover --lumozpool moz.asia.zk.work:10010 --mozaddress $wallet_address --custom_name $miner_name
     
@@ -163,7 +179,7 @@ elif [ "$option" == "2" ]; then
 
     # 현재 버전 입력 받기
     echo -e "${GREEN}해당사이트에 방문하세요: https://github.com/6block/zkwork_moz_prover/tags${NC}"
-    read -p "현재 버전을 입력하세요 (예: v1.0.1): " version
+    read -p "현재 버전을 입력하세요 (예: v1.0.2): " version
     export VERSION=$version
 
     # 작업 디렉토리 생성 및 이동 부분 수정
