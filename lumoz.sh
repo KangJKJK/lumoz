@@ -5,35 +5,6 @@ RED='\033[0;31m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # 색상 초기화
 
-# root 계정 확인 및 설정
-read -p "현재 명령어창이 root 계정입니까? (y/n): " is_root
-if [ "$is_root" = "n" ]; then
-    echo -e "${YELLOW}root 계정 설정을 진행합니다...${NC}"
-    echo -e "${GREEN}계정 전환시 스크립트가 종료되오니 다시 스크린을 열고 스크립트를 실행해주세요.${NC}"
-    
-    # root 비밀번호 설정
-    echo -e "${YELLOW}root 비밀번호를 설정합니다.${NC}"
-    sudo passwd root
-
-    # SSH 설정 수정
-    echo -e "${YELLOW}SSH 설정을 수정하여 root 로그인을 활성화합니다...${NC}"
-    sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-    sudo sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-    sudo sed -i 's/#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-    sudo service ssh restart
-
-    echo -e "${YELLOW}root 계정으로 전환합니다...${NC}"
-    su - root
-    exit 0
-fi
-
-# 작업 디렉토리를 root로 고정
-HOME_DIR="/root"
-WORK_DIR="/root/lumoz_miner"
-
-echo "현재 작업 디렉토리: $(pwd)"
-echo "홈 디렉토리: $HOME_DIR"
-
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: Lumoz 노드 새로 설치${NC}"
