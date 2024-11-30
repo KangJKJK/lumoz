@@ -27,9 +27,6 @@ if [ "$is_root" = "n" ]; then
     exit 0
 fi
 
-echo "현재 작업 디렉토리: $(pwd)"
-echo "홈 디렉토리: $HOME_DIR"
-
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: Lumoz 노드 새로 설치${NC}"
