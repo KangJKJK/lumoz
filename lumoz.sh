@@ -82,6 +82,10 @@ if [ "$option" == "1" ]; then
             sudo apt-get install -y nvidia-cuda-toolkit
         fi
 
+        export PATH=/usr/local/cuda/bin:$PATH
+        export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+        source ~/.bashrc
+
         echo "wsl --set-default-version 2"
         echo "wsl --shutdown"
         echo "wsl --update"
