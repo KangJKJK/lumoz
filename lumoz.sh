@@ -34,8 +34,8 @@ if [ "$option" == "1" ]; then
                 ;;
             2)
                 distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g')
-                wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb
-                sudo dpkg -i cuda-keyring_1.0-1_all.deb
+                wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+                sudo dpkg -i cuda-keyring_1.1-1_all.deb
                 sudo apt-get update
                 sudo apt install -y nvidia-utils-550-server
                 sudo apt install -y nvidia-driver-550-server
@@ -73,9 +73,15 @@ if [ "$option" == "1" ]; then
         if command -v nvcc &> /dev/null; then
             echo -e "${GREEN}CUDA 툴킷이 이미 설치되어 있습니다.${NC}"
             nvcc --version
-            read -p "CUDA 툴킷을 다시 설치하시겠습니까? (y/n): " reinstall_cuda
+            read -p "CUDA 툴킷을 다시 설치하시겠습니까? 최초설치시 업데이트를 위해 다시설치하세요. (y/n): " reinstall_cuda
             if [ "$reinstall_cuda" == "y" ]; then
-                sudo apt-get install -y nvidia-cuda-toolkit
+                sudo apt-get -y install cuda-toolkit-12-3
+                echo 'export PATH=/usr/local/cuda-12.3/bin:$PATH' >> ~/.bashrc
+                echo 'export LD_LIBRARY_PATH=/usr/local/cuda-12.3/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc
+                export PATH=/usr/local/cuda/bin:$PATH
+                export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+                source ~/.bashrc
+                sudo ln -s /usr/local/cuda-12.3 /usr/local/cuda
             fi
         else
             echo -e "${YELLOW}CUDA 툴킷을 설치합니다...${NC}"
